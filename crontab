@@ -1,0 +1,18 @@
+# cron runs jobs with a near-empty PATH (/usr/bin:/bin), which does NOT include
+# /usr/local/bin where the python:3.13 image puts python. Without this line the
+# jobs below fail every run with "python: not found" -- the container stays Up
+# while nothing is ever scraped. Sourcing crawler.env alone is not enough; it
+# carries the CRAWLER_*/ELASTIC_* vars but not PATH.
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Feed polling. Hourly, because feeds only advertise their newest ~20-50 items:
+# anything published between two runs would scroll out of the window unseen.
+# --day all takes whatever is currently listed and lets Elasticsearch decide
+# what is new -- articles already indexed under their guid are not downloaded a
+# second time, so repeat runs are cheap.
+30 * * * * . /app/crawler.env; cd /app && python main.py scrape --day all --no-corpus >> /app/out/events.log 2>&1
+
+# Corpus export. Rebuilds yesterday from Elasticsearch, so the file holds the
+# complete day no matter which hourly run first saw each article. NoDCore
+# imports /app/content at 02:30, so this has to land before then.
+0 2 * * * . /app/crawler.env; cd /app && python main.py nod --day yesterday >> /app/out/events.log 2>&1
