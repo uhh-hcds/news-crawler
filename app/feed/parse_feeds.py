@@ -619,12 +619,13 @@ if __name__ == "__main__":
     import argparse
     from pathlib import Path
     BASE_DIR = Path(__file__).resolve().parents[1]
+    
     created = parse_and_export(
         feeds_file=BASE_DIR / "data" / "feeds_de.txt",
         lang="de",
         out_root="out/nod",
         day=datetime.now(),
-        verbose=True
+        verbose=True,
     )
     
     print(f"\n✓ Created {len(created)} file(s)")

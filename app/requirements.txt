@@ -1,2 +1,6 @@
 feedparser
 nltk
+python-dotenv
+sentence-transformers
+elasticsearch==8.5.0
+tzdata

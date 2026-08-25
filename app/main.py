@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 from datetime import datetime, timedelta, date
-
+from dotenv import load_dotenv
 import es as es_module
 from feed.parse_feeds import DEFAULT_TIMEZONE, export_from_elastic, parse_and_export
 
@@ -24,6 +24,7 @@ def parse_day(value: str) -> datetime | None:
 
 
 def main():
+    load_dotenv() 
     parser = argparse.ArgumentParser(description="News crawler with NoDCore export")
     parser.add_argument(
         "cmd",
